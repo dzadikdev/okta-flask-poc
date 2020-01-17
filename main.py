@@ -428,10 +428,8 @@ def get_travel_agency_group_by_user_info(user_info):
 def get_travel_agency_group_by_user(user):
     print("get_travel_agency_group_by_user()")
     user_group = None
-    print(user)
     if user:
         travel_agency_group_name = None
-        
         if "travelAgencyGroup" in user["profile"]:
             travel_agency_group_name = user["profile"]["travelAgencyGroup"]
             user_group = get_travel_agency_group_by_name(travel_agency_group_name)
@@ -449,12 +447,9 @@ def get_travel_agency_group_by_name(travel_agency_group_name):
         # print("user_groups: {0}".format(user_groups))
         if len(user_groups) > 0:
             # just grab the first one... there should only be one match for now
+            print(user_groups)
             user_group = user_groups[0]
 
-            # Decorated group info
-            travel_agency_data = user_group["profile"]["description"].split("||")
-            user_group["profile"]["description_label"] = travel_agency_data[0]
-            user_group["profile"]["description_url"] = travel_agency_data[1]
 
     return user_group
 

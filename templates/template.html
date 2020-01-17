@@ -176,7 +176,7 @@
 
                   <!-- name-and-slogan -->
                   <div class="site-slogan">
-                    Travel Agency Partner Portal
+                    The Project
                   </div>
 
                 </div>
@@ -184,21 +184,7 @@
 
               </div>
 
-              <!-- Partner Logo start -->
-              {% if travel_agency_group %}
-              <div class="header-first clearfix">
-                <div id="logo2" class="logo">
-                  <a href="{{ url_for('home', _external='True', _scheme='https') }}"><img id="logo_img2" src="{{travel_agency_group.profile.description_url}}" alt="{{travel_agency_group.profile.description_label}}"></a>
-                </div>
-
-                <!-- name-and-slogan-2 -->
-                <div class="site-slogan">
-                  {{travel_agency_group.profile.description_label}}
-                </div>
-              </div>
-              {% endif %}
-              <!-- Partner Logo end -->
-
+          
               <div class="col-lg-4 mr-lg-auto">
 
                 <!-- header-second start -->
