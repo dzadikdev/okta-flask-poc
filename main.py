@@ -131,58 +131,6 @@ def login():
     return render_template("login.html", config=default_settings, oidc=oidc, state=base64.b64encode(bytes(json.dumps(state),'utf-8')).decode('utf-8'))
 
 
-@app.route("/dlogin")
-def dlogin():
-    destination = "{0}/profile".format(default_settings["settings"]["app_base_url"])
-    state = {
-        'csrf_token': session['oidc_csrf_token'],
-        'destination': oidc.extra_data_serializer.dumps(destination).decode('utf-8')
-    }
-    return render_template("dlogin.html", config=default_settings, oidc=oidc)
-
-@app.route("/customlogin",methods = ['POST'])
-def customlogin():
-    okta_auth = OktaAuth(default_settings)
-    username = request.form.get('username')
-    password = request.form.get('password')
-   
-    sm_target_url = request.form.get('targeturl')
-    # sm_target_url = "http://siteminder.aaoktapoc.com/aa/"
-    mylogin = okta_auth.authenticate(username=username, password=password)
-    if "errorCode" in mylogin:
-        print(mylogin)
-        return mylogin
-        
-    okta_session = mylogin['sessionToken']
-    
-    url = "http://siteminder.aaoktapoc.com/siteminderagent/forms/login.fcc"
-  
-    body1 = {
-            'SMENC': 'UTF-8',
-            'USER': username,
-            'PASSWORD': password,
-            'SMLOCALE': 'US-EN',
-            'smauthreason':'0',
-            'smquerydata': '',
-            'smagentname':'-SM-wpOSNS%2bHnACGSFfU2LeLl1S9VHG%2bfNtIay5TxC8zTPp173oee0TJBtH6YZckDNOC',
-            'target':sm_target_url
-        }
-    
-    sm_response = requests.post(url,data=body1)
-    print(sm_response.content)
-    sm_response_string = sm_response.content.decode("utf-8") 
-    if "Your credentials are not valid for" in sm_response_string:
-        return sm_response_string
-        
-    sm_content = sm_response.content.decode("utf-8") 
-    sm_session = sm_response.history[0].cookies['SMSESSION']
-    
-    # return redirect("https://aaoktapoc.oktapreview.com/login/sessionCookieRedirect?token=" + session + "&redirectUrl=https%3A%2F%2Faaoktapoc.oktapreview.com%2Fapp%2FUserHome")
-    return render_template("customlogin.html",sm_session=sm_session, targeturl=sm_target_url, okta_session=okta_session, sm_content=sm_content)
-    
-
-
-
 @app.route("/signup")
 def signup():
 
@@ -194,7 +142,9 @@ def signup():
 def profile():
         user_info = get_user_info()
         okta_admin = OktaAdmin(default_settings)
+        print(user_info)
         user = okta_admin.get_user(user_info["sub"])
+        print(user)
         user_group = get_travel_agency_group_by_user(user)
         app_info = okta_admin.get_applications_by_user_id(user["id"])
 
@@ -478,10 +428,10 @@ def get_travel_agency_group_by_user_info(user_info):
 def get_travel_agency_group_by_user(user):
     print("get_travel_agency_group_by_user()")
     user_group = None
-
+    print(user)
     if user:
         travel_agency_group_name = None
-
+        
         if "travelAgencyGroup" in user["profile"]:
             travel_agency_group_name = user["profile"]["travelAgencyGroup"]
             user_group = get_travel_agency_group_by_name(travel_agency_group_name)

@@ -86,7 +86,7 @@
               <div class="hc-element-invisible" data-animation-effect="fadeInDownSmall" data-effect-delay="100">
                 <!-- logo -->
                 <div id="logo" class="logo text-center">
-                  <h3 class="margin-clear"><a href="{{ url_for('home', _external='True', _scheme='https') }}" class="logo-font link-light">The <span class="text-default">Travel Agency Portal</span></a></h3>
+                  <h3 class="margin-clear"><a href="{{ url_for('home', _external='True', _scheme='https') }}" class="logo-font link-light">The <span class="text-default">Project</span></a></h3>
                 </div>
                 <!-- name-and-slogan -->
                 <div class="form-block center-block p-30 light-gray-bg border-clear">
@@ -97,10 +97,6 @@
                       baseUrl: "{{config.okta_org_name}}",
                       clientId: "{{config.client_id}}",
                       redirectUri: "{{config.redirect_uri}}",
-                      logo: 'https://logo.clearbit.com/aa.com',
-                      idps: [
-                        {type: 'MICROSOFT', id: '0oapa3zybsxCMChDs0h7'}
-                      ],
                       idpDisplay: "SECONDARY",
                       authParams: {
                         issuer: "{{config.issuer}}",
