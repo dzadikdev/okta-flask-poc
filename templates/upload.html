@@ -1,0 +1,118 @@
+{% extends "template.html" %}
+{% block content %}
+      <!-- breadcrumb start -->
+      <!-- ================ -->
+      <div class="breadcrumb-container">
+        <div class="container">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><i class="fa fa-home pr-2"></i><a class="link-dark" href="{{ url_for('home', _external='True', _scheme='https') }}">Home</a></li>
+            <li class="breadcrumb-item active">Import User</li>
+          </ol>
+        </div>
+      </div>
+      <!-- breadcrumb end -->
+
+      <!-- main-container start -->
+      <!-- ================ -->
+      <section class="main-container">
+
+        <div class="container">
+          <div class="row">
+
+            <!-- main start -->
+            <!-- ================ -->
+            <div class="main col-12">
+
+              <!-- page-title start -->
+              <!-- ================ -->
+              <h1 class="page-title">Import Complete</h1>
+              <div class="separator-2"></div>
+              <!-- page-title end -->
+    <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Upload Status</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in returnlist %}
+                         <tr>
+                           <td>{{ userlist[loop.index-1]['profile']['firstName'] }} {{ userlist[loop.index-1]['profile']['lastName'] }}</td>
+                           <td>{{ userlist[loop.index-1]['profile']['email'] }}</td>
+                          {% if "errorSummary" in i %}
+                           <td>{{ i['errorCauses'][0]['errorSummary'] }}</td>
+                          {% endif %}
+                            
+                          {% if "id" in i %}
+                           <td>User Provisioned</td>
+                          {% endif %}
+                           
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+
+
+                </table>
+
+            <!-- main end -->
+
+          </div>
+        </div>
+      </section>
+      
+      <script type="text/javascript">
+        $(window).on('load',function(){
+            var message = getUrlParameter('message');
+            console.log(message);
+            if (!message)
+            {
+              //do nothing
+            }
+            else
+            {
+              $('#basicExampleModal').modal('show');
+            }
+        });
+        
+        var getUrlParameter = function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+        
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+        
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                }
+            }
+        };
+      </script>
+      <!-- Modal -->
+      <div class="modal fade" id="basicExampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Message</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+             {{ request.args.get('message') }}
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+       <!-- End Modal -->
+      <!-- main-container end -->
+
+{% endblock content %}

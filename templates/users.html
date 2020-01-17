@@ -1,0 +1,120 @@
+{% extends "template.html" %}
+{% block content %}
+      <!-- breadcrumb start -->
+      <!-- ================ -->
+      <div class="breadcrumb-container">
+        <div class="container">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><i class="fa fa-home pr-2"></i><a class="link-dark" href="{{ url_for('home', _external='True', _scheme='https') }}">Home</a></li>
+            <li class="breadcrumb-item active">User List</li>
+          </ol>
+        </div>
+      </div>
+      <!-- breadcrumb end -->
+
+      <!-- main-container start -->
+      <!-- ================ -->
+      <section class="main-container">
+
+      <script type="text/javascript">
+        $(window).on('load',function(){
+            var message = getUrlParameter('message');
+            console.log(message);
+            if (!message)
+            {
+              //do nothing
+            }
+            else
+            {
+              $('#basicExampleModal').modal('show');
+            }
+        });
+        
+        var getUrlParameter = function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+        
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+        
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                }
+            }
+        };
+      </script>
+      <!-- Modal -->
+      <div class="modal fade" id="basicExampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Message</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+             {{ request.args.get('message') }}
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+       <!-- End Modal -->
+
+        <div class="container">
+          <div class="row">
+            <!-- main start -->
+            <!-- ================ -->
+            <div class="main col-12">
+              <!-- page-title start -->
+              <!-- ================ -->
+              <h1 class="page-title">User List</h1>
+              <button type="button" class="btn btn-secondary" onclick="window.location.href = 'usercreate';">Create User</button>
+              <div class="separator-2"></div>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th style="text-align:center">User Status</th>
+                        <th style="text-align:center">Update</th>
+                        <th style="text-align:center">Suspend</th>
+                        <th style="text-align:center">Reset Password</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in userlist %}
+                         <tr>
+                            <td>{{ i['profile']['firstName']}} {{ i['profile']['lastName']}}</td>
+                            <td>{{ i['profile']['email']}}</td>
+                            <td style="text-align:center">{{ i['status'] }}</td>
+                            <td style="text-align:center"><a href="/userupdate?user_id={{ i.id}}"><i class="fa fa-edit"></i></a></td>
+                            {% if i['status'] == 'ACTIVE' or i['status'] == 'RECOVERY'  %}
+                                   <td style="text-align:center"><a href="/suspenduser?user_id={{ i.id}}"><i class="fa fa-toggle-on"></i></a></td>
+                            {% else %}
+                                   <td style="text-align:center"><a href="/unsuspenduser?user_id={{ i.id}}"><i class="fa fa-toggle-off"></i></a></td>
+                            {% endif %}
+                            <td style="text-align:center"><a href="/resetpassword?user_id={{ i.id}}"><i class="fa fa-key"></i></a></td>
+                              
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+
+
+                </table>
+            </div>
+            <!-- main end -->
+
+          </div>
+        </div>
+      </section>
+
+      <!-- main-container end -->
+
+{% endblock content %}
