@@ -100,7 +100,7 @@ def is_admin(token):
     print("is_admin(token)")
     result = False
     okta_auth = OktaAuth(default_settings)
-    check_admin = TokenUtil.get_single_claim_from_token(token,"taa")
+    check_admin = TokenUtil.get_single_claim_from_token(token,"isAdmin")
     result = check_admin
 
     return result
@@ -116,9 +116,9 @@ def serve_static_html(filename):
 @app.route("/")
 def home():
     user_info = get_user_info()
-    user_group = get_travel_agency_group_by_user_info(user_info)
+    user_group = get_group_by_user_info(user_info)
 
-    return render_template("home.html", oidc=oidc, user_info=user_info, config=default_settings, travel_agency_group=user_group)
+    return render_template("home.html", oidc=oidc, user_info=user_info, config=default_settings, user_group=user_group)
 
 
 @app.route("/login")
@@ -145,10 +145,10 @@ def profile():
         print(user_info)
         user = okta_admin.get_user(user_info["sub"])
         print(user)
-        user_group = get_travel_agency_group_by_user(user)
+        user_group = get_group_by_user(user)
         app_info = okta_admin.get_applications_by_user_id(user["id"])
 
-        return render_template("profile.html", oidc=oidc, applist=app_info, user_info=user_info, config=default_settings, travel_agency_group=user_group)
+        return render_template("profile.html", oidc=oidc, applist=app_info, user_info=user_info, config=default_settings, user_group=user_group)
 
 
 @app.route("/logout")
@@ -163,8 +163,8 @@ def logout():
 @requires_admin
 def importusers():
     user_info = get_user_info()
-    user_group = get_travel_agency_group_by_user_info(user_info)
-    return render_template("import.html", user_info=user_info, oidc=oidc, config=default_settings, travel_agency_group=user_group)
+    user_group = get_group_by_user_info(user_info)
+    return render_template("import.html", user_info=user_info, oidc=oidc, config=default_settings, user_group=user_group)
 
 
 @app.route('/upload',methods = ['POST'])
@@ -178,8 +178,8 @@ def upload_route_summary():
 
         # Group Name from Claims
         token = oidc.get_access_token()
-        group_name = TokenUtil.get_single_claim_from_token(token,"tagrp")
-        user_group = get_travel_agency_group_by_name(group_name)
+        group_name = TokenUtil.get_single_claim_from_token(token,"userGroup")
+        user_group = get_group_by_name(group_name)
 
         # Create variable for uploaded file
         f = request.files['fileupload']
@@ -199,14 +199,14 @@ def upload_route_summary():
                     "email": user_record['email'].replace("'", ""),
                     "login": user_record['email'].replace("'", ""),
                     "mobilePhone": user_record['mobilePhone'].replace("'", ""),
-                    "travelAgencyGroup": group_name
+                    "theProjectGroup": group_name
                 }
             }
             return_users.append(user_data)
             import_users = okta_admin.create_user(user_data,True)
             return_list.append(import_users)
 
-    return render_template("upload.html", user_info=user_info, oidc=oidc,returnlist=return_list, userlist=return_users, config=default_settings, travel_agency_group=user_group)
+    return render_template("upload.html", user_info=user_info, oidc=oidc,returnlist=return_list, userlist=return_users, config=default_settings, user_group=user_group)
 
 
 
@@ -218,12 +218,12 @@ def users():
     okta_admin = OktaAdmin(default_settings)
 
     token = oidc.get_access_token()
-    group_name = TokenUtil.get_single_claim_from_token(token,"tagrp")
-    user_group = get_travel_agency_group_by_name(group_name)
+    group_name = TokenUtil.get_single_claim_from_token(token,"userGroup")
+    user_group = get_group_by_name(group_name)
     group_id = user_group["id"]
 
     group_user_list = okta_admin.get_user_list_by_group_id(group_id)
-    return render_template("users.html", user_info=user_info, oidc=oidc, userlist= group_user_list, config=default_settings, travel_agency_group=user_group)
+    return render_template("users.html", user_info=user_info, oidc=oidc, userlist= group_user_list, config=default_settings, user_group=user_group)
 
 
 @app.route("/suspenduser")
@@ -286,9 +286,9 @@ def userupdate():
     user_id = request.args.get('user_id')
     user_info2 = okta_admin.get_user(user_id)
 
-    user_group = get_travel_agency_group_by_user(user_info2)
+    user_group = get_group_by_user(user_info2)
 
-    return render_template("userupdate.html", user_info=user_info, oidc=oidc, user_info2=user_info2, config=default_settings, travel_agency_group=user_group)
+    return render_template("userupdate.html", user_info=user_info, oidc=oidc, user_info2=user_info2, config=default_settings, user_group=user_group)
 
 
 @app.route("/updateuserinfo", methods=["POST"])
@@ -327,9 +327,9 @@ def updateuserinfo():
 @requires_admin
 def usercreate():
     user_info = get_user_info()
-    user_group = get_travel_agency_group_by_user_info(user_info)
+    user_group = get_group_by_user_info(user_info)
 
-    return render_template("usercreate.html", user_info=user_info, oidc=oidc, config=default_settings, travel_agency_group=user_group)
+    return render_template("usercreate.html", user_info=user_info, oidc=oidc, config=default_settings, user_group=user_group)
 
 @app.route("/admincreateuser", methods=["POST"])
 def admincreateuser():
@@ -345,9 +345,9 @@ def admincreateuser():
     if not login:
         login = email
 
-    #  Group and find a Travel Agency
+    #  Group and find a Group
     token = oidc.get_access_token()
-    group_name = TokenUtil.get_single_claim_from_token(token,"tagrp")
+    group_name = TokenUtil.get_single_claim_from_token(token,"userGroup")
 
 
     user_data = {
@@ -357,7 +357,7 @@ def admincreateuser():
                     "email": email,
                     "login": login,
                     "mobilePhone": mobile_phone,
-                    "travelAgencyGroup": group_name
+                    "theProjectGroup": group_name
                 }
             }
 
@@ -393,7 +393,7 @@ def signupcreateuser():
                 "email": email,
                 "login": login,
                 "mobilePhone": mobile_phone,
-                "travelAgencyGroup": group_name
+                "theProjectGroup": group_name
             },
              "credentials": {
                 "password" : { "value": password }
@@ -413,37 +413,37 @@ def signupcreateuser():
     return redirect(url_for("signup", _external="True", _scheme="https",message=message))
 
 
-def get_travel_agency_group_by_user_info(user_info):
-    print("get_travel_agency_group()")
+def get_group_by_user_info(user_info):
+    print("get_group_by_user_info()")
     user_group = None
 
     if user_info:
         okta_admin = OktaAdmin(default_settings)
         user = okta_admin.get_user(user_info["sub"])
-        user_group = get_travel_agency_group_by_user(user)
+        user_group = get_group_by_user(user)
 
     return user_group
 
 
-def get_travel_agency_group_by_user(user):
-    print("get_travel_agency_group_by_user()")
+def get_group_by_user(user):
+    print("get_group_by_user()")
     user_group = None
     if user:
-        travel_agency_group_name = None
-        if "travelAgencyGroup" in user["profile"]:
-            travel_agency_group_name = user["profile"]["travelAgencyGroup"]
-            user_group = get_travel_agency_group_by_name(travel_agency_group_name)
+        group_name = None
+        if "theProjectGroup" in user["profile"]:
+            group_name = user["profile"]["theProjectGroup"]
+            user_group = get_group_by_name(group_name)
 
     return user_group
 
 
-def get_travel_agency_group_by_name(travel_agency_group_name):
-    print("get_travel_agency_group_by_name()")
+def get_group_by_name(group_name):
+    print("get_group_by_name()")
     user_group = None
 
-    if travel_agency_group_name:
+    if group_name:
         okta_admin = OktaAdmin(default_settings)
-        user_groups = okta_admin.get_groups_by_name(travel_agency_group_name)
+        user_groups = okta_admin.get_groups_by_name(group_name)
         # print("user_groups: {0}".format(user_groups))
         if len(user_groups) > 0:
             # just grab the first one... there should only be one match for now

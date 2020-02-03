@@ -34,4 +34,3 @@ default_settings = {
 }
 
 
-
