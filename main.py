@@ -362,6 +362,7 @@ def admincreateuser():
             }
 
     user_create_response = okta_admin.create_user(user_data)
+    print(user_create_response)
     if user_create_response:
         message = "User " + first_name + " "+  last_name+ " was Created"
     else:
