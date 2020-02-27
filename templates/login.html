@@ -104,8 +104,13 @@
                         state: '{{state}}',
                         display: 'page',
                         scopes: ['openid', 'profile', 'email']
-                      }
-
+                      },
+                      idps: [
+                        {
+                          type: 'GOOGLE',
+                          id: '0oapdz5hpnOL3DB4e0h7'
+                        }
+                      ]
                     }).renderEl(
                       { el: '#sign-in-widget' },
                       function (res) {}
